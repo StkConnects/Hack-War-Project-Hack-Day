@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VPD — Visual Program Debugger</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="desktop">
+    <header class="titlebar">
+      <div class="brand">
+        <span class="brand-mark">VPD</span>
+        <div>
+          <h1>Visual Program Debugger</h1>
+          <p>Understand your code, one step at a time.</p>
+        </div>
+      </div>
+      <span class="version">PROTOTYPE 01</span>
+    </header>
+
+    <nav class="menubar">
+      <span>FILE</span><span>DEBUG</span><span>VIEW</span><span>HELP</span>
+      <span class="menu-right">PYTHON MODE</span>
+    </nav>
+
+    <section class="intro">
+      <div>
+        <h2>Program workspace</h2>
+        <p>Write a program or choose an example to see how it works.</p>
+      </div>
+      <div class="status-indicator"><span></span> READY TO DEBUG</div>
+    </section>
+
+    <section class="samples panel">
+      <div class="section-heading">
+        <div>
+          <h2>Sample programs</h2>
+          <p>Choose an example to load it into the editor.</p>
+        </div>
+        <span class="small-label">DEMO LIBRARY</span>
+      </div>
+
+      <div class="sample-group">
+        <span class="sample-group-label">WORKING EXAMPLES</span>
+        <div class="sample-buttons">
+          <button class="sample-button" data-sample="sum">
+            <span class="sample-icon good">✓</span>
+            <span><strong>Sum of numbers</strong><small>Loops & variable updates</small></span>
+          </button>
+          <button class="sample-button" data-sample="grade">
+            <span class="sample-icon good">✓</span>
+            <span><strong>Grade checker</strong><small>Conditions & decisions</small></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sample-group">
+        <span class="sample-group-label">PROGRAMS WITH MISTAKES</span>
+        <div class="sample-buttons">
+          <button class="sample-button" data-sample="logic">
+            <span class="sample-icon warning">!</span>
+            <span><strong>Incorrect average</strong><small>Logic mistake</small></span>
+          </button>
+          <button class="sample-button" data-sample="runtime">
+            <span class="sample-icon error">×</span>
+            <span><strong>Missing variable</strong><small>Runtime error</small></span>
+          </button>
+          <button class="sample-button" data-sample="syntax">
+            <span class="sample-icon error">×</span>
+            <span><strong>Missing colon</strong><small>Syntax error</small></span>
+          </button>
+        </div>
+      </div>
+      <div class="sample-description" id="sample-description">
+        Select a sample to see what it demonstrates.
+      </div>
+    </section>
+
+    <section class="workspace-grid">
+      <section class="panel editor-panel">
+        <div class="panel-heading">
+          <div><span class="panel-icon">01</span><h2>Code editor</h2></div>
+          <span class="small-label">PYTHON</span>
+        </div>
+        <div class="editor-meta"><span>PROGRAM.PY</span><span id="line-count">0 LINES</span></div>
+        <textarea id="code" spellcheck="false" autocapitalize="off"
+          autocomplete="off" autocorrect="off" aria-label="Python code editor">numbers = [2, 4, 6, 8]
+
+total = 0
+
+for number in numbers:
+    total += number
+
+average = total / len(numbers)
+
+print("Numbers:", numbers)
+print("Total:", total)
+print("Average:", average)</textarea>
+        <div class="editor-footer">
+          <button class="classic-button" id="reset">↶ Reset sample</button>
+          <button class="classic-button primary-button" id="run">▶ Run program</button>
+        </div>
+        <p class="editor-hint">Tip: Select a sample above, or write your own Python code.</p>
+      </section>
+
+      <section class="right-column">
+        <section class="panel output-panel">
+          <div class="panel-heading">
+            <div><span class="panel-icon">02</span><h2>Program output</h2></div>
+            <span id="run-status" class="run-status">● IDLE</span>
+          </div>
+          <pre id="output">Your program's output will appear here.</pre>
+          <div class="output-footer" id="execution-meta">No execution recorded</div>
+        </section>
+
+        <section class="panel analysis-panel">
+          <div class="panel-heading">
+            <div><span class="panel-icon">03</span><h2>Run summary</h2></div>
+          </div>
+          <div id="analysis-content" class="analysis-content">
+            <strong>Ready when you are</strong>
+            <p>Run a program to see a simple summary of what happened.</p>
+          </div>
+        </section>
+      </section>
+    </section>
+
+    <section class="panel trace-panel">
+      <div class="panel-heading trace-heading">
+        <div><span class="panel-icon">04</span><h2>Execution trace</h2></div>
+        <div class="trace-controls">
+          <span><strong id="trace-count">0</strong> recorded steps</span>
+          <button class="classic-button" id="prev" disabled>←</button>
+          <span id="step-counter">— / —</span>
+          <button class="classic-button" id="next" disabled>→</button>
+        </div>
+      </div>
+      <p class="section-help">Each entry represents a moment when Python executed a line. Select one to understand it.</p>
+      <div class="trace-layout">
+        <div class="trace-list" id="trace-list">
+          <div class="empty-state">Run a program to see its execution steps.</div>
+        </div>
+        <aside class="variables-panel">
+          <div class="subheading">
+            <h3>Variable Logs</h3>
+            <span id="current-line">LINE —</span>
+          </div>
+          <p class="section-help">These are the values your program is holding at the selected step.</p>
+          <div id="variables-content" class="variables-content">
+            <div class="empty-state">No variable logs yet.</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="panel explanation-panel">
+      <div class="panel-heading">
+        <div><span class="panel-icon">05</span><h2>Understand this step</h2></div>
+      </div>
+      <div id="line-explanation" class="line-explanation">
+        <div class="empty-state">Select an execution step to see a beginner-friendly explanation.</div>
+      </div>
+    </section>
+
+    <section class="panel analogy-panel">
+      <div class="analogy-header">
+        <div>
+          <span class="panel-icon">06</span>
+          <h2>Visual program explanation</h2>
+          <p>See the selected program as one complete story, from input to result.</p>
+        </div>
+        <button class="classic-button primary-button" id="visual-toggle" disabled>
+          Show full explanation
+        </button>
+      </div>
+      <div class="visualizer" id="visualizer" hidden>
+        <p id="analogy-intro" class="analogy-intro"></p>
+        <div id="analogy-story" class="analogy-story"></div>
+        <div id="analogy-summary" class="analogy-summary"></div>
+      </div>
+    </section>
+
+    <footer>
+      <span>VPD — VISUAL PROGRAM DEBUGGER</span>
+      <span>BUILT TO MAKE CODE EASIER TO UNDERSTAND</span>
+    </footer>
+  </main>
+  <script src="/static/script.js"></script>
+</body>
+</html>
