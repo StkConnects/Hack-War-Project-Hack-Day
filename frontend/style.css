@@ -853,3 +853,30 @@ footer {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Editor line-number gutter */
+.editor-body {
+  display: flex;
+  min-width: 0;
+  background: #222c37;
+}
+
+#line-numbers {
+  flex: 0 0 48px;
+  box-sizing: border-box;
+  padding: 16px 10px;
+  overflow: hidden;
+  border-right: 1px solid #46515e;
+  color: #8493a4;
+  background: #293440;
+  text-align: right;
+  white-space: pre;
+  user-select: none;
+  font: 14px/1.8 var(--mono);
+}
+
+#code {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+}

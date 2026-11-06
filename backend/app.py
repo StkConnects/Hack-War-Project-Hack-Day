@@ -276,6 +276,93 @@ def diagnose_logic(code):
             corrected_code=replace_line(code, line, fixed_line),
         )
 
+    # Detect a likely discount calculation mistake.
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+
+        target = next(
+            (item for item in node.targets
+             if isinstance(item, ast.Name) and "final" in item.id.lower()),
+            None,
+        )
+        value = node.value
+
+        if (
+            target
+            and isinstance(value, ast.BinOp)
+            and isinstance(value.op, ast.Div)
+            and isinstance(value.right, ast.Constant)
+            and value.right.value == 100
+            and isinstance(value.left, ast.BinOp)
+            and isinstance(value.left.op, ast.Mult)
+            and isinstance(value.left.left, ast.Name)
+            and isinstance(value.left.right, ast.Name)
+        ):
+            price = value.left.left.id
+            discount = value.left.right.id
+            line = node.lineno
+            original = lines[line - 1]
+            fixed_line = (
+                f"{target.id} = {price} - "
+                f"({price} * {discount} / 100)"
+            )
+
+            return make_diagnosis(
+                "logic",
+                "Possible discount calculation mistake",
+                "This calculates the discount amount, not the final price. "
+                "Subtract the discount from the original price.",
+                line,
+                original,
+                fixed_line,
+                "The final price is the original price minus the discount amount.",
+                confidence="medium",
+                corrected_code=replace_line(code, line, fixed_line),
+            )
+
+    # Detect a likely age eligibility boundary mistake.
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.If):
+            continue
+
+        comparison = node.test
+        mentions_eligibility = any(
+            isinstance(item, ast.Constant)
+            and isinstance(item.value, str)
+            and any(word in item.value.lower()
+                    for word in ("eligible", "vote"))
+            for item in ast.walk(node)
+        )
+
+        if (
+            isinstance(comparison, ast.Compare)
+            and isinstance(comparison.left, ast.Name)
+            and comparison.left.id == "age"
+            and len(comparison.ops) == 1
+            and isinstance(comparison.ops[0], ast.Gt)
+            and len(comparison.comparators) == 1
+            and isinstance(comparison.comparators[0], ast.Constant)
+            and comparison.comparators[0].value == 18
+            and mentions_eligibility
+        ):
+            line = node.lineno
+            original = lines[line - 1]
+            fixed_line = original.replace(">", ">=", 1)
+
+            return make_diagnosis(
+                "logic",
+                "Possible age boundary mistake",
+                "The condition excludes people who are exactly 18. "
+                "If eligibility starts at 18, use >= instead of >.",
+                line,
+                original,
+                fixed_line,
+                "The >= operator includes 18 as well as every age above 18.",
+                confidence="medium",
+                corrected_code=replace_line(code, line, fixed_line),
+            )
+
     # Detect an explicit division by zero.
     for node in ast.walk(tree):
         if (

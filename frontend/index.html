@@ -70,6 +70,14 @@
             <span class="sample-icon error">×</span>
             <span><strong>Missing colon</strong><small>Syntax error</small></span>
           </button>
+          <button class="sample-button" data-sample="discount">
+            <span class="sample-icon warning">!</span>
+            <span><strong>Discount calculator</strong><small>Calculation mistake</small></span>
+          </button>
+          <button class="sample-button" data-sample="age">
+            <span class="sample-icon warning">!</span>
+            <span><strong>Age eligibility</strong><small>Boundary condition</small></span>
+          </button>
         </div>
       </div>
       <div class="sample-description" id="sample-description">
@@ -84,7 +92,9 @@
           <span class="small-label">PYTHON</span>
         </div>
         <div class="editor-meta"><span>PROGRAM.PY</span><span id="line-count">0 LINES</span></div>
-        <textarea id="code" spellcheck="false" autocapitalize="off"
+        <div class="editor-body">
+          <div id="line-numbers" aria-hidden="true">1</div>
+          <textarea id="code" spellcheck="false" autocapitalize="off"
           autocomplete="off" autocorrect="off" aria-label="Python code editor">numbers = [2, 4, 6, 8]
 
 total = 0
@@ -97,6 +107,7 @@ average = total / len(numbers)
 print("Numbers:", numbers)
 print("Total:", total)
 print("Average:", average)</textarea>
+        </div>
         <div class="editor-footer">
           <button class="classic-button" id="reset">↶ Reset sample</button>
           <button class="classic-button primary-button" id="run">▶ Run program</button>

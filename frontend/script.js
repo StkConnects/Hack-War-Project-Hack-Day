@@ -80,6 +80,26 @@ print("The total is:", total)`
 
 for number in numbers
     print(number)`
+  },
+  discount: {
+    title: "Discount calculator",
+    description: "This calculates the discount amount instead of the final price. The discount should be subtracted from the original price.",
+    code: `price = 1000
+discount = 20
+
+final_price = price * discount / 100
+
+print("Final price:", final_price)`
+  },
+  age: {
+    title: "Age eligibility",
+    description: "This uses > instead of >=. Someone who is exactly 18 should also be eligible to vote.",
+    code: `age = 17
+
+if age > 18:
+    print("Eligible to vote")
+else:
+    print("Not eligible to vote")`
   }
 };
 
@@ -95,11 +115,20 @@ function element(tag, className, text) {
   return node;
 }
 
-function updateLineCount() {
-  $("line-count").textContent = `${codeInput.value.split("\n").length} LINES`;
+function updateLineNumbers() {
+  const count = codeInput.value.split("\n").length;
+  $("line-numbers").textContent = Array.from(
+    { length: count },
+    (_, index) => index + 1
+  ).join("\n");
+  $("line-count").textContent = `${count} LINES`;
 }
-codeInput.addEventListener("input", updateLineCount);
-updateLineCount();
+
+codeInput.addEventListener("input", updateLineNumbers);
+codeInput.addEventListener("scroll", () => {
+  $("line-numbers").scrollTop = codeInput.scrollTop;
+});
+updateLineNumbers();
 
 function clearResults() {
   trace = [];
@@ -156,10 +185,23 @@ $("reset").addEventListener("click", () => {
   codeInput.value = initialSample;
   updateLineCount();
   clearResults();
+  document.querySelectorAll(".sample-button").forEach((button) => {
+    button.classList.remove("active");
+  });
   output.textContent = "Sample restored. Press Run program when ready.";
   setStatus("READY");
   executionMeta.textContent = "Waiting for execution";
 });
+
+// Clear sample selection when the editor is used manually.
+function clearSampleSelection() {
+  document.querySelectorAll(".sample-button").forEach((button) => {
+    button.classList.remove("active");
+  });
+}
+
+codeInput.addEventListener("focus", clearSampleSelection);
+codeInput.addEventListener("input", clearSampleSelection);
 
 function prettyValue(value) {
   if (typeof value === "string") return JSON.stringify(value);
@@ -613,5 +655,7 @@ codeInput.addEventListener("keydown", (event) => {
 
 // Load the default working example into the sample selector.
 $("sample-description").textContent = samples.sum.description;
-document.querySelector('[data-sample="sum"]').classList.add("active");
+document.querySelectorAll(".sample-button").forEach((button) => {
+  button.classList.remove("active");
+});
 clearResults();
